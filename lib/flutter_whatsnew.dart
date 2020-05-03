@@ -212,7 +212,7 @@ class ChangeLogView extends StatefulWidget {
   const ChangeLogView({this.changes, this.path, this.onTapLink});
   final String changes;
   final String path;
-  final MarkdownTapLinkCallback onTapLink
+  final MarkdownTapLinkCallback onTapLink;
   @override
   _ChangeLogViewState createState() => _ChangeLogViewState();
 }
