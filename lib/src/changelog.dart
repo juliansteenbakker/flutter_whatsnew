@@ -9,9 +9,11 @@ class ChangeLogView extends StatefulWidget {
     this.onTapLink,
     this.path,
     this.changes,
+    required this.adaptive,
   });
   final String? changes;
   final String? path;
+  final bool adaptive;
   final MarkdownTapLinkCallback? onTapLink;
   @override
   _ChangeLogViewState createState() => _ChangeLogViewState();
@@ -39,8 +41,9 @@ class _ChangeLogViewState extends State<ChangeLogView> {
   @override
   Widget build(BuildContext context) {
     if (_changelog == null) {
-      if (defaultTargetPlatform == TargetPlatform.iOS ||
-          defaultTargetPlatform == TargetPlatform.macOS) {
+      if (widget.adaptive &&
+          (defaultTargetPlatform == TargetPlatform.iOS ||
+              defaultTargetPlatform == TargetPlatform.macOS)) {
         return Center(child: CupertinoActivityIndicator());
       } else {
         return Center(child: CircularProgressIndicator());

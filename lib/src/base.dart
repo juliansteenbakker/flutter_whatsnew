@@ -16,6 +16,7 @@ class WhatsNewPage extends StatelessWidget {
   final Color? buttonColor;
   final String? path;
   final MarkdownTapLinkCallback? onTapLink;
+  final bool adaptive;
 
   const WhatsNewPage({
     required this.items,
@@ -25,6 +26,7 @@ class WhatsNewPage extends StatelessWidget {
     this.backgroundColor,
     this.buttonColor,
     this.onTapLink,
+    this.adaptive = true,
   })  : changelog = false,
         changes = null,
         path = null;
@@ -48,6 +50,7 @@ class WhatsNewPage extends StatelessWidget {
     this.buttonColor,
     this.path,
     this.onTapLink,
+    this.adaptive = true,
   })  : changelog = true,
         items = null;
 
@@ -86,14 +89,13 @@ class WhatsNewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Changelog: $changelog");
     assert(items != null || changelog);
-    if (!kIsWeb &&
+    if (adaptive &&
+        !kIsWeb &&
         (defaultTargetPlatform == TargetPlatform.iOS ||
             defaultTargetPlatform == TargetPlatform.macOS)) {
       return _buildIOS(context);
     }
-
     return _buildAndroid(context);
   }
 
@@ -129,6 +131,7 @@ class WhatsNewPage extends StatelessWidget {
                   changes: changes,
                   path: path,
                   onTapLink: onTapLink,
+                  adaptive: adaptive,
                 ),
               ),
               Positioned(
@@ -214,6 +217,7 @@ class WhatsNewPage extends StatelessWidget {
         changes: changes,
         path: path,
         onTapLink: onTapLink,
+        adaptive: adaptive,
       );
     } else if (items != null) {
       child = Material(

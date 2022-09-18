@@ -1,3 +1,9 @@
+## 1.0.5
+
+* Adding adaptive option
+* Updating example
+* Adding delay option
+
 ## 1.0.4
 
 * Null safety

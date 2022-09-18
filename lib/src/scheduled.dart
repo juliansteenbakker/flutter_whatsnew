@@ -38,25 +38,18 @@ class _ScheduledWhatsNewPageState extends State<ScheduledWhatsNewPage> {
   }
 
   void check() async {
-    assert(
-      widget.delay != null || widget.appVersion != null,
-      'You must provide either a delay or an appVersion to show the dialog',
-    );
-
-    if (widget.delay != null) {
-      await Future<void>.delayed(widget.delay!);
-      show(context);
-      return;
-    }
     if (widget.appVersion != null) {
       final settingsKey = 'last-app-version';
       final lastVersion = prefs.getString(settingsKey);
-      if (lastVersion != widget.appVersion) {
-        await prefs.setString(settingsKey, widget.appVersion!);
-        show(context);
+      if (lastVersion == widget.appVersion) {
+        return;
       }
-      return;
+      await prefs.setString(settingsKey, widget.appVersion!);
     }
+    if (widget.delay != null) {
+      await Future<void>.delayed(widget.delay!);
+    }
+    show(context);
   }
 
   void show(BuildContext context) {
