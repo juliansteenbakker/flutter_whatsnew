@@ -1,3 +1,11 @@
+## 1.0.4
+
+* Null safety
+* Updating styles
+* Adding ScheduledWhatsNewPage with delay or app version check
+* Making more methods optional
+* Web compatible
+
 ## 1.0.3
 
 * Adding Web Support
