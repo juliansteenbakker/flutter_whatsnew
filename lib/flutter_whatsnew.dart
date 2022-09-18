@@ -11,19 +11,19 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 class WhatsNewPage extends StatelessWidget {
   final Widget title;
   final Widget buttonText;
-  final List<ListTile> items;
-  final VoidCallback onButtonPressed;
+  final List<ListTile>? items;
+  final VoidCallback? onButtonPressed;
   final bool changelog;
-  final String changes;
-  final Color backgroundColor;
-  final Color buttonColor;
-  final String path;
-  final MarkdownTapLinkCallback onTapLink;
+  final String? changes;
+  final Color? backgroundColor;
+  final Color? buttonColor;
+  final String? path;
+  final MarkdownTapLinkCallback? onTapLink;
 
   const WhatsNewPage({
-    @required this.items,
-    @required this.title,
-    @required this.buttonText,
+    required this.items,
+    required this.title,
+    required this.buttonText,
     this.onButtonPressed,
     this.backgroundColor,
     this.buttonColor,
@@ -33,8 +33,8 @@ class WhatsNewPage extends StatelessWidget {
         path = null;
 
   const WhatsNewPage.changelog({
-    @required this.title,
-    @required this.buttonText,
+    required this.title,
+    required this.buttonText,
     this.onButtonPressed,
     this.changes,
     this.backgroundColor,
@@ -44,8 +44,12 @@ class WhatsNewPage extends StatelessWidget {
   })  : changelog = true,
         items = null;
 
-  static void showDetailPopUp(BuildContext context, String title, String detail) async {
-    void showDemoDialog<T>({BuildContext context, Widget child}) {
+  static void showDetailPopUp(
+      BuildContext context, String title, String detail) async {
+    void showDemoDialog<T>({
+      required BuildContext context,
+      required Widget child,
+    }) {
       showDialog<T>(
         context: context,
         barrierDismissible: false,
@@ -59,7 +63,7 @@ class WhatsNewPage extends StatelessWidget {
         title: Text(title),
         content: Text(detail),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text('OK'),
             onPressed: () {
               Navigator.pop(context);
@@ -72,7 +76,8 @@ class WhatsNewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Changelog: $changelog");
+    debugPrint("Changelog: $changelog");
+    assert(items != null || changelog);
     if (!kIsWeb && Platform.isIOS) {
       return _buildIOS(context);
     }
@@ -81,9 +86,18 @@ class WhatsNewPage extends StatelessWidget {
   }
 
   Widget _buildAndroid(BuildContext context) {
+    final buttonStyle = ElevatedButton.styleFrom(
+      backgroundColor: buttonColor ?? Theme.of(context).colorScheme.primary,
+      foregroundColor: buttonColor != null
+          ? (buttonColor!.computeLuminance() > 0.5
+              ? Colors.black
+              : Colors.white)
+          : Theme.of(context).colorScheme.onPrimary,
+    );
     if (changelog) {
       return Scaffold(
-        backgroundColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor:
+            backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Stack(
             fit: StackFit.loose,
@@ -99,16 +113,20 @@ class WhatsNewPage extends StatelessWidget {
                 right: 0.0,
                 top: 50.0,
                 bottom: 80.0,
-                child: ChangeLogView(changes: changes, path: path, onTapLink: onTapLink),
+                child: ChangeLogView(
+                  changes: changes,
+                  path: path,
+                  onTapLink: onTapLink,
+                ),
               ),
               Positioned(
                 bottom: 5.0,
                 right: 10.0,
                 left: 10.0,
                 child: ListTile(
-                  title: RaisedButton(
+                  title: ElevatedButton(
                     child: buttonText,
-                    color: buttonColor ?? Colors.blue,
+                    style: buttonStyle,
                     onPressed: onButtonPressed != null
                         ? onButtonPressed
                         : () {
@@ -121,65 +139,74 @@ class WhatsNewPage extends StatelessWidget {
           ),
         ),
       );
-    }
-    return Scaffold(
-      backgroundColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Stack(
-          fit: StackFit.loose,
-          children: <Widget>[
-            Positioned(
-              top: 10.0,
-              left: 0.0,
-              right: 0.0,
-              child: title,
-            ),
-            Positioned(
-              left: 0.0,
-              right: 0.0,
-              top: 50.0,
-              bottom: 80.0,
-              child: ListView(
-                children: items
-                    .map(
-                      (ListTile item) => ListTile(
-                        title: item.title,
-                        subtitle: item.subtitle,
-                        leading: item.leading,
-                        trailing: item.trailing,
-                        onTap: item.onTap,
-                        onLongPress: item.onLongPress,
-                      ),
-                    )
-                    .toList(),
+    } else if (items != null) {
+      return Scaffold(
+        backgroundColor:
+            backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+        body: SafeArea(
+          child: Stack(
+            fit: StackFit.loose,
+            children: <Widget>[
+              Positioned(
+                top: 10.0,
+                left: 0.0,
+                right: 0.0,
+                child: title,
               ),
-            ),
-            Positioned(
-              bottom: 5.0,
-              right: 10.0,
-              left: 10.0,
-              child: ListTile(
-                title: RaisedButton(
-                  child: buttonText,
-                  color: buttonColor ?? Colors.blue,
-                  onPressed: onButtonPressed != null ? onButtonPressed : () => Navigator.pop(context),
+              Positioned(
+                left: 0.0,
+                right: 0.0,
+                top: 50.0,
+                bottom: 80.0,
+                child: ListView(
+                  children: items!
+                      .map(
+                        (ListTile item) => ListTile(
+                          title: item.title,
+                          subtitle: item.subtitle,
+                          leading: item.leading,
+                          trailing: item.trailing,
+                          onTap: item.onTap,
+                          onLongPress: item.onLongPress,
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                bottom: 5.0,
+                right: 10.0,
+                left: 10.0,
+                child: ListTile(
+                  title: ElevatedButton(
+                    child: buttonText,
+                    style: buttonStyle,
+                    onPressed: onButtonPressed != null
+                        ? onButtonPressed
+                        : () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+    return Container();
   }
 
   Widget _buildIOS(BuildContext context) {
-    Widget child;
+    Widget? child;
     if (changelog) {
-      child = ChangeLogView(changes: changes, path: path, onTapLink: onTapLink);
-    } else {
+      child = ChangeLogView(
+        changes: changes,
+        path: path,
+        onTapLink: onTapLink,
+      );
+    } else if (items != null) {
       child = Material(
         child: ListView(
-          children: items,
+          children: items!,
         ),
       );
     }
@@ -188,28 +215,32 @@ class WhatsNewPage extends StatelessWidget {
         middle: title,
       ),
       child: SafeArea(
-        child: child,
+        child: child ?? Container(),
       ),
     );
   }
 }
 
 class ChangeLogView extends StatefulWidget {
-  const ChangeLogView({this.changes, this.path, this.onTapLink});
-  final String changes;
-  final String path;
-  final MarkdownTapLinkCallback onTapLink;
+  const ChangeLogView({
+    this.onTapLink,
+    this.path,
+    this.changes,
+  });
+  final String? changes;
+  final String? path;
+  final MarkdownTapLinkCallback? onTapLink;
   @override
   _ChangeLogViewState createState() => _ChangeLogViewState();
 }
 
 class _ChangeLogViewState extends State<ChangeLogView> {
-  String _changelog;
+  String? _changelog;
 
   @override
   void initState() {
-    if (widget?.changes == null) {
-      rootBundle.loadString(widget?.path ?? "CHANGELOG.md").then((data) {
+    if (widget.changes == null) {
+      rootBundle.loadString(widget.path ?? "CHANGELOG.md").then((data) {
         setState(() {
           _changelog = data;
         });
@@ -231,6 +262,6 @@ class _ChangeLogViewState extends State<ChangeLogView> {
         return Center(child: CircularProgressIndicator());
       }
     }
-    return Markdown(data: _changelog, onTapLink: widget.onTapLink);
+    return Markdown(data: _changelog!, onTapLink: widget.onTapLink);
   }
 }
